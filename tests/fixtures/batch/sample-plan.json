@@ -1,0 +1,22 @@
+{
+  "steps": [
+    {
+      "action": "file.create",
+      "arguments": {
+        "root": "__ROOT__",
+        "target": "batch-output.txt",
+        "parents": false,
+        "exist_ok": false
+      }
+    },
+    {
+      "action": "text.write",
+      "arguments": {
+        "root": "__ROOT__",
+        "target": "batch-output.txt",
+        "content": "hello from fixture\n",
+        "mode": "overwrite"
+      }
+    }
+  ]
+}

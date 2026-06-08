@@ -1,0 +1,4 @@
+interface:
+  display_name: "FileGlide CLI"
+  short_description: "用 fileglide 取代通用文件系统写工具"
+  default_prompt: "Use $fileglide to perform filesystem reads, writes, searches, and edits through fileglide instead of apply_patch, shell redirection, PowerShell file commands, or language-native write APIs. Keep JSON output by default, and route large-content writes through Python-driven UTF-8 stdin streams."

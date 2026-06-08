@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "fileglide"
 version = "0.0.1"
-description = "Agent-oriented CLI for structured filesystem."
+description = "Agent-oriented filesystem CLI for precise, Chinese-friendly file and path operations with stronger non-ASCII support."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

@@ -35,7 +35,8 @@ def create_root_command() -> click.Command:
     @click.version_option(__version__, prog_name="fileglide")
     @click.pass_context
     def root(ctx: click.Context, output_format: str, pretty: bool) -> None:
-        """Agent-oriented filesystem CLI with JSON as the default contract."""
+        """Agent-oriented filesystem CLI for precise, Chinese-friendly file and path operations with stronger
+        non-ASCII support."""
 
         ctx.obj = build_runtime(output_format=output_format, pretty=pretty)
 

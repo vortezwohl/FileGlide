@@ -1,22 +1,21 @@
 <div align="center">
-  <h1>OpenTrade</h1>
-  <p><strong>終端裡的市場資料，專為人與 Agent 而設計。</strong></p>
-  <p>用一套統一命令樹完成證券搜尋、行情查看、歷史行情查詢、資料匯出，以及指標資訊更豐富的 <code>observation</code> 結構化輸出。</p>
+  <h1>FileGlide</h1>
+  <p><strong>面向 AI agent 的檔案系統 CLI，提供精確、預設 JSON 的檔案與路徑操作能力。</strong></p>
+  <p>從統一命令樹中完成樹狀遍歷、大小感知、名稱與內容檢索、精確行編輯、二進位處理，以及顯式批次計畫執行。</p>
   <p>
     <a href="https://www.python.org/"><img alt="Python 3.10+" src="https://img.shields.io/badge/Python-3.10%2B-2F5D8C"></a>
-    <a href="https://pypi.org/project/opentrade/"><img alt="PyPI 套件" src="https://img.shields.io/badge/PyPI-opentrade-2563EB"></a>
-    <a href="https://pypi.org/project/akshare/"><img alt="後端 akshare" src="https://img.shields.io/badge/Backend-akshare-1D4ED8"></a>
-    <a href="https://pypi.org/project/efinance/"><img alt="後端 efinance" src="https://img.shields.io/badge/Backend-efinance-B45309"></a>
-    <a href="https://pypi.org/project/yfinance/"><img alt="後端 yfinance" src="https://img.shields.io/badge/Backend-yfinance-15803D"></a>
+    <a href="https://pypi.org/project/click/"><img alt="CLI framework Click" src="https://img.shields.io/badge/CLI-Click-2563EB"></a>
+    <a href="https://pypi.org/project/vortezwohl/"><img alt="Fuzzy matching vortezwohl" src="https://img.shields.io/badge/Fuzzy-vortezwohl-0F766E"></a>
+    <a href="../docs/fileglide-architecture.html"><img alt="Architecture HTML" src="https://img.shields.io/badge/Docs-Architecture-9A3412"></a>
   </p>
   <p>
-    <a href="#installation">安裝</a> ·
-    <a href="#agent-skills">Agent Skills</a> ·
-    <a href="#quick-start">快速開始</a> ·
-    <a href="#command-tree">命令樹</a> ·
-    <a href="#output-and-defaults">輸出與預設值</a> ·
-    <a href="#indicator-support">技術指標支援</a> ·
-    <a href="#more-docs">更多文件</a>
+    <a href="#安裝">安裝</a> |
+    <a href="#快速開始">快速開始</a> |
+    <a href="#命令樹">命令樹</a> |
+    <a href="#輸出與編碼">輸出與編碼</a> |
+    <a href="#檢索與編輯">檢索與編輯</a> |
+    <a href="#批次執行">批次執行</a> |
+    <a href="#更多文件">更多文件</a>
   </p>
 </div>
 
@@ -24,153 +23,149 @@
 
 ## 安裝
 
-安裝已發佈到 PyPI 的 `opentrade`。安裝後可使用 `opentrade` 和 `optr` 兩個命令。
+目前此倉庫以專案級本地執行為主，直接使用虛擬環境中的命令即可：
 
-```bash
-uv add -U opentrade
-opentrade --help
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' --help
 ```
 
-```bash
-pip install -U opentrade
-opentrade --help
-```
-
-執行環境要求為 Python `3.10+`。
-
-## Agent Skills
-
-OpenTrade 也提供面向 Codex、Claude Code 與其他 Agent 的 skill，用於自動投研工作流。
-
-當你希望 Agent 幫你安裝這些 skill 時，只需要直接說：
-
-> Please install skills from `https://github.com/vortezwohl/OpenTrade`, and place them in my global user skill directory.
-
-這些 skill 主要用於股票、基金、債券、期貨與更廣義市場場景下的自動化投研分析。
+需要 Python `3.10+`。CLI 基於 `click` 建構，預設輸出契約為 JSON。
 
 ## 快速開始
 
-### 1. 搜尋
+### 1. 建立受控工作區目錄
 
-```bash
-opentrade search --query AAPL --market US_stock --result-count 5 --format json
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' path create 'tests/tmp/demo/docs' --root 'D:\github-project\fileglide' --parents --exist-ok
 ```
 
-當你只知道代碼、關鍵字或公司名時，先搜尋最穩妥。
+透過 `--root` 可以把所有相對路徑約束在一個明確的工作區根目錄下。
 
-### 2. 最新行情
+### 2. 建立並寫入文字檔案
 
-```bash
-opentrade quote price latest --symbols AAPL --format json
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' file create 'tests/tmp/demo/docs/notes.txt' --root 'D:\github-project\fileglide' --parents --exist-ok
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' text write 'tests/tmp/demo/docs/notes.txt' --root 'D:\github-project\fileglide' --mode overwrite --content "alpha`nbravo`ncharlie"
 ```
 
-當你希望使用跨後端共享 symbol / ticker 流程時，優先使用共享 `quote` 命令。
+可以透過 `overwrite`、`append`、`insert` 三種模式控制文字寫入行為。
 
-### 3. 歷史行情
+### 3. 精確讀取行區間
 
-```bash
-opentrade quote price history --symbols AAPL --market us_stock --start-date 20250501 --end-date 20250601 --format json
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' text read 'tests/tmp/demo/docs/notes.txt' --root 'D:\github-project\fileglide' --start-line 2 --end-line 3
 ```
 
-需要 K 線、回補、指標或匯出時，進入歷史命令。
+當 agent 只需要局部上下文而不想整個檔案載入時，這種精確讀取很有用。
+
+### 4. 以正則檢索檔案內容
+
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' text grep 'bravo|charlie' 'tests/tmp/demo' --root 'D:\github-project\fileglide' --include '*.txt'
+```
+
+內容檢索支援正則表達式與局部範圍遍歷。
+
+### 5. 模糊檢索檔名
+
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' file search 'note' 'tests/tmp/demo' --root 'D:\github-project\fileglide' --mode fuzzy
+```
+
+檔名與路徑名的模糊比對基於 `vortezwohl` 的萊文斯坦距離能力實作。
 
 ## 命令樹
 
 | 命令 | 角色 | 典型用途 |
 |---|---|---|
-| `search` | 關鍵字搜尋 | 在還不知道精確標識時先找候選標的 |
-| `resolve` | 標識解析 | 在需要時把 symbol 解析成 provider 專屬 quote ID |
-| `quote` | 跨資產共享查詢 | 統一存取共享 latest、history、profile |
-| `stock` | 股票專項流程 | 行情、快照、資金流、股東、資料 |
-| `fund` | 基金專項流程 | 淨值、估值、配置、經理、報告 |
-| `bond` | 債券專項流程 | 行情、資料、成交、資金流 |
-| `futures` | 期貨專項流程 | 目錄、歷史、即時、成交 |
-| `market` | 市場級查詢 | 即時掃描與市場映射類查詢 |
-| `watch` | 刷新包裝器 | 按固定間隔重複執行支援的命令 |
+| `file` | 檔案生命週期與檔案級遍歷 | 建立、刪除、列出、存在性判斷、檔案檢索 |
+| `path` | 目錄生命週期與路徑級遍歷 | 建立、刪除、列出、存在性判斷、目錄檢索 |
+| `tree` | 混合樹狀遍歷 | 從受控起點同時回傳檔案與目錄 |
+| `text` | 文字與二進位內容操作 | 讀取、寫入、正則檢索、行區間替換、錨點插入、二進位複製 |
+| `inspect` | 大小與位元組檢查 | 取得檔案/目錄大小，讀取二進位安全的位元組片段 |
+| `batch` | 顯式批次執行 | 驗證並逐步執行 JSON 計畫 |
 
-## 輸出與預設值
+## 輸出與編碼
 
-當前共享命令的真實預設值：
+目前對外預設行為：
 
-- `--format table`
-- `--indicator-level advanced`
-- `--view observation`
-- `--trace-window 32`
-- 省略 `--backend` 時會解析為 `auto`
+- `--format json`
+- `--pretty`
+- 透過 `--root` 做受控路徑解析
+- 直接適配 UTF-8 without BOM
+- 文字工作流程可識別並處理 UTF-8 BOM、UTF-16 LE、GBK、GB18030、Shift-JIS 等常見編碼
+- 二進位命令保持二進位安全，不強制按文字解碼
 
-實用說明：
+實務建議：
 
-- `observation` 是預設的公共輸出視圖。
-- 需要未包裝結構時使用 `--view raw`。
-- 對腳本和 Agent 來說，`json` 通常最合適。
-- `full` 比 `advanced` 提供更豐富的指標上下文，但會消耗更多歷史回補與計算成本。
+- 人工檢視時可切換為 `--format text`。
+- 腳本、自動化、agent 呼叫優先保持 `json`。
+- 文字命令可透過 `--encoding` 強制指定編碼。
+- 二進位寫入與位元組切片檢查可以避免非文字資料被誤毀損。
 
-## 技術指標支援
+## 檢索與編輯
 
-技術指標增強是 `opentrade` 的核心能力之一，相容命令可以輸出比原始行情更豐富的市場上下文。
+代表性的編輯與檢索操作：
 
-| 等級 | 實際會得到什麼 |
-|---|---|
-| `basic` | 核心趨勢與動量指標，如 MA、EMA、MACD、RSI、KDJ、BOLL、ATR、OBV |
-| `advanced` | 更廣的趨勢強度、通道與資金流指標，如 ADX、Donchian、Keltner、SuperTrend、MFI、PVT、CMF、VWAP、VR、PSY |
-| `full` | 更完整的結構與市場上下文指標，如 Ichimoku、SAR、Mass Index、Pivot Points、Fibonacci Retracement、支撐阻力、Chaikin Oscillator、Chaikin Volatility、EMV |
-
-代表性的指標家族包括：
-
-- 均線與基礎變換
-- 趨勢與通道指標
-- 動量指標
-- 成交量與資金流指標
-- 波動率指標
-- 價格結構指標
-- 常見中文技術指標
-
-完整列表和分組請見 [docs/indicator-coverage.md](../docs/indicator-coverage.md)。
-
-## 後端說明
-
-- shared 命令預設走 `auto`，當前一個 backend 失敗時，`auto` 可能回退到其他 backend。
-- shared `symbols` 不是東方財富 `quote_id`。
-- `yfinance` 的分時歷史視窗限制較嚴格，並且在本專案裡更偏向單標的語義。
-- 某條命令即使在 `auto` 下最終成功，也可能因為所選 backend 的歷史回補失敗而遺失 enriched observation 欄位。
-
-更詳細的 backend 約束與排障說明請見 [docs/backend-notes.md](../docs/backend-notes.md)。
-
-## 常見任務
-
-### 搜尋並查看
-
-```bash
-opentrade search --query NVDA --market US_stock
-opentrade quote price latest --symbols NVDA
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' text write 'tests/tmp/demo/docs/notes.txt' --root 'D:\github-project\fileglide' --mode append --content "`ndelta"
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' text write 'tests/tmp/demo/docs/notes.txt' --root 'D:\github-project\fileglide' --mode insert --position 6 --content '[INSERT]'
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' text replace-lines 'tests/tmp/demo/docs/notes.txt' --root 'D:\github-project\fileglide' --start-line 2 --end-line 2 --content 'BRAVO'
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' text insert-anchor 'tests/tmp/demo/docs/notes.txt' --root 'D:\github-project\fileglide' --after --anchor 'BRAVO' --content "`nANCHOR-INSERT"
 ```
 
-### 查看歷史
-
-```bash
-opentrade stock price history --symbols AAPL --market us_stock --start-date 20250501 --end-date 20250601 --format json
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' path search 'doc' 'tests/tmp/demo' --root 'D:\github-project\fileglide' --mode fuzzy --kind directory
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' tree list 'tests/tmp/demo' --root 'D:\github-project\fileglide' --kind all
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' inspect size 'tests/tmp/demo' --root 'D:\github-project\fileglide'
 ```
 
-### 循環刷新
+這些命令是為 AI agent 設計，目標是讓檔案系統操作具備精確、本地、可驗證的行為，而不是依賴脆弱的 shell 文字解析。
 
-```bash
-opentrade watch --interval 5 --count 3 quote price latest --symbols AAPL --format json
+## 批次執行
+
+`fileglide` 支援以顯式 JSON 計畫組織一組操作。
+
+計畫範例結構：
+
+```json
+{
+  "steps": [
+    {
+      "action": "path.create",
+      "params": {
+        "target": "tests/tmp/batch-demo",
+        "root": "D:\\github-project\\fileglide",
+        "parents": true,
+        "exist_ok": true
+      }
+    },
+    {
+      "action": "text.write",
+      "params": {
+        "target": "tests/tmp/batch-demo/readme.txt",
+        "root": "D:\\github-project\\fileglide",
+        "mode": "overwrite",
+        "content": "batch-ready"
+      }
+    }
+  ]
+}
 ```
 
-### 匯出資料
+建議先預覽，再執行：
 
-```bash
-opentrade quote price history --symbols AAPL --market us_stock --start-date 20250501 --end-date 20250601 --format csv --output aapl-history.csv
+```powershell
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' batch run 'D:\github-project\fileglide\tests\fixtures\batch\sample-plan.json' --dry-run
+& 'D:\github-project\fileglide\.venv\Scripts\fileglide.exe' batch run 'D:\github-project\fileglide\tests\fixtures\batch\sample-plan.json' --apply
 ```
 
 ## 更多文件
 
-- [技術指標覆蓋](../docs/indicator-coverage.md)
-- [Observation 範例](../docs/observation-examples.md)
-- [後端說明](../docs/backend-notes.md)
+- [架構與專案設計](../docs/fileglide-architecture.html)
 - [English README](../README.md)
 - [简体中文 README](README.zh-CN.md)
 
-## 授權
+## License
 
-MIT License。
+MIT License.

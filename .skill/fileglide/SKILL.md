@@ -42,16 +42,16 @@ skill 面向 agent 的强制策略：
 
 第一次真正执行 `fileglide` 前，先确认：
 
-1. `python --version`
-2. `fileglide --help`
-3. 如果需要项目内虚拟环境，再检查 `D:\github-project\fileglide\.venv\Scripts\fileglide.exe --help`
-4. shell 入口不存在时，再试 `python -m fileglide --help`
+1. 先检查 `python --version` 是否可用。
+2. 再检查 `fileglide --help`；若 `fileglide` 的 shell 路径未安装，再试试 `python -m fileglide --help`。
+3. 若检查发现 `fileglide` 缺失，务必执行 `pip install -U fileglide` 进行安装 (默认使用全局安装)，安装完毕后检查并确保 `fileglide --help` 可用，不要就此放弃使用 `fileglide`。
+
 
 ## 默认工作流
 
 1. 先选对应子命令：`path create`、`file create`、`text read`、`text write`、`text replace-lines`、`text grep`、`file search`/`path search`、`tree list`、`inspect size`/`inspect bytes`、`batch run`。
 2. 大内容写入时，用 Python `subprocess.run(..., input=payload.encode("utf-8"))` 调用 `fileglide text write --content-stdin`。
-3. 编辑时优先做整块替换，不要链式堆积碎片补丁。
+3. 编辑时优先做整块替换(块大小最少为 24 行)，不要链式堆积碎片补丁。
 4. 每次写入后立即 `text read` 回读刚修改的区块。
 5. 如果怀疑编码或 BOM 异常，再用 `inspect bytes` 确认真实字节。
 
